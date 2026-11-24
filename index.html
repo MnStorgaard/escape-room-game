@@ -10,17 +10,14 @@
 <div id="app">
   <header id="topbar">
     <div id="timer">⏱️ 00:00</div>
-    <div id="title">🕵️ Detektiven i fængslet</div>
+    <div id="roomName"></div>
     <div id="buttons">
       <button id="hintBtn" title="Hjælp">💡 Hjælp</button>
       <button id="soundBtn" title="Lyd til/fra">🔊</button>
     </div>
   </header>
 
-  <main id="scene">
-    <div class="floor"></div>
-    <!-- Room objects are created by game.js -->
-  </main>
+  <main id="scene"></main>
 
   <div id="message"></div>
 
@@ -30,23 +27,27 @@
   </footer>
 </div>
 
-<!-- Popup window for puzzles -->
+<div id="banner"></div>
+
 <div id="modal" class="hidden">
   <div id="modalBox">
-    <button id="modalClose">✖</button>
+    <button id="modalClose" title="Luk">✖</button>
     <div id="modalContent"></div>
   </div>
 </div>
 
-<!-- Start and end screens -->
 <div id="startScreen" class="screen">
   <div class="screen-box">
     <div class="big">🕵️🔒</div>
     <h1>Detektiven i fængslet</h1>
     <p>Den frække tyv <b>Mester Mus</b> 🐭 har snydt dig!<br>
        Nu sidder DU i fængsel, selvom du er uskyldig.</p>
-    <p>Find spor, løs gåderne og slip ud,<br>før vagten vågner! 💂💤</p>
-    <p class="small">Klik på ting i rummet for at undersøge dem.</p>
+    <p>Kom ud af cellen, snig dig forbi vagterne<br>og find vej ud gennem den store port! 🏰</p>
+    <div class="how">
+      <div>👆 Klik på ting i rummet</div>
+      <div>🎒 Klik på en ting i rygsækken og derefter på noget i rummet for at bruge den</div>
+      <div>🧩 Klik på to ting i rygsækken for at sætte dem sammen</div>
+    </div>
     <button id="startBtn" class="primary">▶️ Start</button>
   </div>
 </div>
@@ -54,13 +55,16 @@
 <div id="endScreen" class="screen hidden">
   <div class="screen-box">
     <div class="big">🎉🕵️🎉</div>
-    <h1>Du slap ud!</h1>
+    <h1>Du er fri!</h1>
     <p id="endText"></p>
     <button id="againBtn" class="primary">🔄 Spil igen</button>
   </div>
 </div>
 
 <script src="sound.js"></script>
-<script src="game.js"></script>
+<script src="art.js"></script>
+<script src="engine.js"></script>
+<script src="rooms/cell.js"></script>
+<script>Game.init();</script>
 </body>
 </html>

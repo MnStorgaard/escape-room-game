@@ -28,6 +28,10 @@ const Sound = (() => {
     wrong: () => { tone(180, 0, 0.25, "square", 0.08); tone(140, 0.15, 0.3, "square", 0.08); },
     success: () => [523, 659, 784].forEach((f, i) => tone(f, i * 0.1, 0.25, "triangle", 0.15)),
     item: () => [784, 1047].forEach((f, i) => tone(f, i * 0.12, 0.3, "sine", 0.15)),
+    door: () => { tone(120, 0, 0.5, "sawtooth", 0.05); tone(90, 0.2, 0.5, "sawtooth", 0.05); },
+    bark: () => { tone(320, 0, 0.12, "square", 0.1); tone(260, 0.18, 0.15, "square", 0.1); },
+    radio: () => [392, 440, 523, 440, 392, 523, 587].forEach((f, i) => tone(f, i * 0.14, 0.2, "square", 0.06)),
+    alarm: () => { tone(880, 0, 0.15, "square", 0.08); tone(660, 0.18, 0.15, "square", 0.08); },
     win: () => [523, 659, 784, 1047, 784, 1047].forEach((f, i) => tone(f, i * 0.15, 0.35, "triangle", 0.18)),
   };
 
