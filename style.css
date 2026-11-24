@@ -63,6 +63,10 @@ button.primary:hover { background: #f2bb3c; }
 .bob { animation: bob 2.4s infinite ease-in-out; }
 @keyframes bob { 50% { transform: translateY(-6px); } }
 
+#scene.look-left .pg-right, #scene:not(.look-left) .pg-left { display: none; }
+.clue-box { background: #fff; border: 3px dashed #c9a86a; border-radius: 12px; padding: 10px 14px; font-size: 1.3rem; line-height: 1.6; margin: 8px auto; display: inline-block; }
+.small-text { font-size: .95rem; opacity: .75; }
+
 #message {
   min-height: 2.6em;
   background: #2b2838;

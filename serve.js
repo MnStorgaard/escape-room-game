@@ -7,7 +7,8 @@ const TYPES = { ".html": "text/html", ".css": "text/css", ".js": "text/javascrip
 const root = __dirname;
 
 http.createServer((req, res) => {
-  const urlPath = req.url === "/" ? "/index.html" : decodeURIComponent(req.url.split("?")[0]);
+  let urlPath = decodeURIComponent(req.url.split("?")[0]);
+  if (urlPath === "/") urlPath = "/index.html";
   const file = path.join(root, urlPath);
   if (!file.startsWith(root)) { res.writeHead(403); return res.end(); }
   fs.readFile(file, (err, data) => {

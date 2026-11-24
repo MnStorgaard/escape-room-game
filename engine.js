@@ -179,6 +179,7 @@ const Game = (() => {
     closeModal();
     state.room = id;
     state.selected = null;
+    $("scene").className = "";
     const r = rooms[id];
     const n = ROOM_ORDER.indexOf(id) + 1;
     $("roomName").textContent = `Rum ${n}/${ROOM_ORDER.length}: ${r.title}`;
