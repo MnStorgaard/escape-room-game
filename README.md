@@ -2,7 +2,10 @@
 
 Browser escape rooms for kids aged 6-9 (Danish). 5 games × 3 rooms, drawn SVG graphics, generated sound, no external files.
 
-## Run
+## Play online
+https://mnstorgaard.github.io/escape-room-game/
+
+## Run locally
 - `node serve.js` and open http://localhost:8080
 - Or double-click `index.html`
 - Testing shortcuts: `?game=space` opens a game's intro, `?game=space&room=airlock` starts in that room
