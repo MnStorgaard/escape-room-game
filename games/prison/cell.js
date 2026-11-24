@@ -3,7 +3,7 @@
 //        count stars/mice/bars -> lock box 475 -> magnet
 //        magnet + string -> magnet line -> drain grate -> key -> door
 (() => {
-  const G = Game;
+  const G = Game.use("prison");
   G.item("mirror", "🪞", "spejlstykke");
   G.item("string", "🧵", "snor");
   G.item("magnet", "🧲", "magnet");
@@ -51,6 +51,7 @@
   G.room({
     id: "cell",
     title: "Cellen",
+    particles: { type: "dust", count: 26 },
     intro: "Du sidder i en celle 🔒 Find en vej ud! Klik på ting for at undersøge dem.",
 
     background: () => `
@@ -63,6 +64,7 @@
     objects: [
       {
         id: "door",
+        label: "Celledør",
         draw: () => `
           <rect x="50" y="140" width="260" height="505" fill="#1c1b24"/>
           <rect x="50" y="140" width="260" height="505" fill="none" stroke="#3d3f4a" stroke-width="18"/>
@@ -84,6 +86,7 @@
       },
       {
         id: "poster",
+        label: "Plakat",
         draw: () => `
           <g transform="rotate(-3 450 225)">
             <rect x="360" y="110" width="180" height="230" rx="4" fill="#f3e6c4" stroke="#c9b48a" stroke-width="4"/>
@@ -96,6 +99,7 @@
       },
       {
         id: "scratches",
+        label: "Ridser i væggen",
         draw: () => `
           <rect x="580" y="350" width="340" height="90" fill="transparent"/>
           ${Art.mouseDoodle(610, 400)}${Art.mouseDoodle(655, 400)}${Art.mouseDoodle(700, 400)}
@@ -105,6 +109,7 @@
       },
       {
         id: "window",
+        label: "Vindue",
         draw: () => `
           <rect x="930" y="100" width="240" height="200" rx="6" fill="#2c2a33"/>
           <rect x="945" y="115" width="210" height="170" fill="url(#nightSky)"/>
@@ -115,6 +120,7 @@
       },
       {
         id: "note",
+        label: "Seddel",
         draw: () => `
           <g transform="rotate(4 1295 200)">
             <rect x="1220" y="130" width="150" height="130" fill="#fffbe9" stroke="#d8cfa8" stroke-width="3"/>
@@ -140,6 +146,7 @@
       },
       {
         id: "table",
+        label: "Bord med skuffe",
         draw: () => `
           ${Art.shadow(595, 775, 160)}
           <rect x="475" y="610" width="18" height="160" fill="url(#darkWood)"/><rect x="697" y="610" width="18" height="160" fill="url(#darkWood)"/>
@@ -151,6 +158,7 @@
       },
       {
         id: "toilet",
+        label: "Toilet",
         draw: () => `
           ${Art.shadow(1010, 728, 60)}
           <rect x="1030" y="560" width="60" height="90" rx="8" fill="#e9eef3" stroke="#b9c3cc" stroke-width="3"/>
@@ -160,6 +168,7 @@
       },
       {
         id: "grate",
+        label: "Kloakrist",
         draw: (api) => `
           <defs><clipPath id="grateClip"><ellipse cx="840" cy="805" rx="80" ry="24"/></clipPath></defs>
           <ellipse cx="840" cy="805" rx="88" ry="30" fill="#2c2833"/>
@@ -187,6 +196,7 @@
       },
       {
         id: "bed",
+        label: "Seng",
         draw: () => `
           ${Art.shadow(1320, 728, 220)}
           <rect x="1135" y="610" width="16" height="115" fill="#3a3a44"/><rect x="1490" y="610" width="16" height="115" fill="#3a3a44"/>
@@ -199,6 +209,7 @@
       },
       {
         id: "pillow",
+        label: "Pude",
         draw: () => `<ellipse cx="1448" cy="548" rx="58" ry="24" fill="#f4f1e8" stroke="#d6d0c0" stroke-width="3"/>
           <path d="M1400 548 h96" stroke="#d6d0c0" stroke-dasharray="6 6" stroke-width="2"/>`,
         click(api) {
@@ -212,6 +223,7 @@
       },
       {
         id: "lockbox",
+        label: "Metalkasse",
         draw: (api) => `
           <rect x="1215" y="650" width="120" height="72" rx="8" fill="#5f6672" stroke="#3a3f47" stroke-width="4"/>
           <rect x="1240" y="668" width="70" height="26" rx="4" fill="${api.flag("boxOpen") ? "#3a7d44" : "#222"}"/>
@@ -235,6 +247,7 @@
       },
       {
         id: "spider",
+        label: "Edderkop",
         draw: () => `
           <line x1="1460" y1="0" x2="1460" y2="80" stroke="#ddd" stroke-width="2" opacity=".6"/>
           <g class="swing">

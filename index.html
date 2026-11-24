@@ -3,13 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Detektiven i fængslet</title>
+<title>Flugt-eventyr – 5 escape-spil</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div id="app">
   <header id="topbar">
-    <div id="timer">⏱️ 00:00</div>
+    <div class="top-left">
+      <button id="menuBtn" title="Til menuen">🏠</button>
+      <div id="timer">⏱️ 00:00</div>
+    </div>
     <div id="roomName"></div>
     <div id="buttons">
       <button id="hintBtn" title="Hjælp">💡 Hjælp</button>
@@ -28,6 +31,7 @@
 </div>
 
 <div id="banner"></div>
+<div id="tip"></div>
 
 <div id="modal" class="hidden">
   <div id="modalBox">
@@ -36,37 +40,64 @@
   </div>
 </div>
 
-<div id="startScreen" class="screen">
-  <div class="screen-box">
-    <div class="big">🕵️🔒</div>
-    <h1>Detektiven i fængslet</h1>
-    <p>Den frække tyv <b>Mester Mus</b> 🐭 har snydt dig!<br>
-       Nu sidder DU i fængsel, selvom du er uskyldig.</p>
-    <p>Kom ud af cellen, snig dig forbi vagterne<br>og find vej ud gennem den store port! 🏰</p>
-    <div class="how">
-      <div>👆 Klik på ting i rummet</div>
-      <div>🎒 Klik på en ting i rygsækken og derefter på noget i rummet for at bruge den</div>
-      <div>🧩 Klik på to ting i rygsækken for at sætte dem sammen</div>
+<!-- Game selection -->
+<div id="menuScreen" class="screen">
+  <div class="menu-box">
+    <h1 class="logo">🗝️ Flugt-eventyr</h1>
+    <p class="subtitle">Vælg et spil. Find spor, løs gåder og slip ud!</p>
+    <div class="legend">
+      <span class="diff d1">●○○○ Nem</span>
+      <span class="diff d2">●●○○ Normal</span>
+      <span class="diff d3">●●●○ Normal+</span>
+      <span class="diff d4">●●●● Svær</span>
     </div>
-    <button id="startBtn" class="primary">▶️ Start</button>
+    <div id="gameGrid"></div>
+  </div>
+</div>
+
+<!-- Intro for the chosen game -->
+<div id="introScreen" class="screen hidden">
+  <div class="intro-box">
+    <div id="introArt"></div>
+    <div class="intro-text">
+      <h1 id="introTitle"></h1>
+      <div id="introDiff"></div>
+      <div id="introStory"></div>
+      <div class="how">
+        <div>👆 Klik på ting i rummet</div>
+        <div>🎒 Klik på en ting i rygsækken og derefter på noget i rummet for at bruge den</div>
+        <div>🧩 Klik på to ting i rygsækken for at sætte dem sammen</div>
+        <div>💡 Sidder du fast? Tryk på Hjælp</div>
+      </div>
+      <div class="row">
+        <button id="introBack">⬅️ Tilbage</button>
+        <button id="startBtn" class="primary">▶️ Start</button>
+      </div>
+    </div>
   </div>
 </div>
 
 <div id="endScreen" class="screen hidden">
   <div class="screen-box">
     <div class="big">🎉🕵️🎉</div>
-    <h1>Du er fri!</h1>
+    <h1 id="endTitle">Du slap ud!</h1>
     <p id="endText"></p>
-    <button id="againBtn" class="primary">🔄 Spil igen</button>
+    <div class="row">
+      <button id="endMenuBtn">🏠 Vælg et andet spil</button>
+      <button id="againBtn" class="primary">🔄 Spil igen</button>
+    </div>
   </div>
 </div>
 
 <script src="sound.js"></script>
 <script src="art.js"></script>
 <script src="engine.js"></script>
-<script src="rooms/cell.js"></script>
-<script src="rooms/corridor.js"></script>
-<script src="rooms/yard.js"></script>
+<!-- Games (order = order on the menu) -->
+<script src="games/dino/dino.js"></script>
+<script src="games/prison/prison.js"></script>
+<script src="games/prison/cell.js"></script>
+<script src="games/prison/corridor.js"></script>
+<script src="games/prison/yard.js"></script>
 <script>Game.init();</script>
 </body>
 </html>

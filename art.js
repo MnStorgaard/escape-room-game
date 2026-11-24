@@ -55,6 +55,12 @@ const Art = (() => {
     <radialGradient id="moonGlow">
       <stop offset="0" stop-color="#fff6d0" stop-opacity=".5"/><stop offset="1" stop-color="#fff6d0" stop-opacity="0"/>
     </radialGradient>
+    <filter id="blur30" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="30"/></filter>
+    <filter id="blur6"><feGaussianBlur stdDeviation="6"/></filter>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="8" stdDeviation="8" flood-opacity=".35"/></filter>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset=".5" stop-color="#fff" stop-opacity=".05"/><stop offset="1" stop-color="#fff" stop-opacity=".25"/>
+    </linearGradient>
     <radialGradient id="vignette" cx=".5" cy=".5" r=".75">
       <stop offset=".6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".55"/>
     </radialGradient>
@@ -170,5 +176,25 @@ const Art = (() => {
     <path d="M${x - 40} ${len + 20} L${x - 18} ${len} H${x + 18} L${x + 40} ${len + 20} Z" fill="#3b3b47"/>
     <circle cx="${x}" cy="${len + 26}" r="12" fill="#fff3c4"/>`;
 
-  return { defs, star, shadow, mouseDoodle, guard, dog, mouse, lamp };
+  // Floating ambient particles. cfg: { type: dust | bubbles | sparks | fog | snow, count, color }
+  function particles(cfg) {
+    if (!cfg) return "";
+    const { type = "dust", count = 24, color = "#fff6d0", seed = 7 } = cfg;
+    let s = seed;
+    const rnd = () => (s = (s * 9301 + 49297) % 233280) / 233280;
+    let out = `<g pointer-events="none">`;
+    for (let i = 0; i < count; i++) {
+      const x = rnd() * 1600, y = rnd() * 900, dur = 6 + rnd() * 9, delay = -rnd() * dur;
+      const style = `animation-duration:${dur.toFixed(1)}s;animation-delay:${delay.toFixed(1)}s`;
+      if (type === "fog") out += `<ellipse class="p-fog" cx="${x}" cy="${500 + rnd() * 380}" rx="${220 + rnd() * 200}" ry="${30 + rnd() * 30}" fill="${color}" opacity=".08" style="${style}"/>`;
+      else out += `<circle class="p-${type}" cx="${x}" cy="${y}" r="${(type === "bubbles" ? 4 : 1.5) + rnd() * 3}" fill="${type === "bubbles" ? "none" : color}" stroke="${type === "bubbles" ? color : "none"}" stroke-width="2" style="${style}"/>`;
+    }
+    return out + "</g>";
+  }
+
+  // Simple glowing light spot
+  const glow = (x, y, r, color = "#ffe9a8", op = 0.5) =>
+    `<circle cx="${x}" cy="${y}" r="${r}" fill="${color}" opacity="${op}" filter="url(#blur30)" pointer-events="none"/>`;
+
+  return { defs, star, shadow, mouseDoodle, guard, dog, mouse, lamp, particles, glow };
 })();

@@ -3,7 +3,7 @@
 //        radio from shelf + batteries -> working radio -> distract desk guard
 //        logbook math (mouse + mouse = 8, cheese = mouse - 1) -> door code 43
 (() => {
-  const G = Game;
+  const G = Game.use("prison");
   G.item("radio", "📻", "radio (uden batterier)");
   G.item("batteries", "🔋", "batterier");
   G.item("radioOn", "📻🎵", "radio der virker");
@@ -52,6 +52,7 @@
   G.room({
     id: "corridor",
     title: "Gangen",
+    particles: { type: "dust", count: 20 },
     intro: "Du er ude af cellen! 🤫 Men en vagt går frem og tilbage. Snig dig forbi, når han kigger væk.",
 
     enter(api) {
@@ -84,6 +85,7 @@
     objects: [
       {
         id: "cellDoor",
+        label: "Celledøren",
         draw: () => `
           <rect x="40" y="170" width="190" height="475" fill="#1c1b24" stroke="#3d3f4a" stroke-width="14"/>
           <g transform="skewY(-8) translate(0 20)">${[0, 1, 2, 3].map((i) => `<rect x="${55 + i * 26}" y="190" width="10" height="440" rx="4" fill="url(#metal)"/>`).join("")}</g>`,
@@ -91,6 +93,7 @@
       },
       {
         id: "shelf",
+        label: "Hylde",
         draw: (api) => `
           <rect x="250" y="330" width="210" height="16" rx="3" fill="url(#wood)"/>
           <path d="M270 346 l0 30 l20 -30 M440 346 l0 30 l-20 -30" stroke="#5a3a1e" stroke-width="6" fill="none"/>
@@ -111,6 +114,7 @@
       },
       {
         id: "crates",
+        label: "Kasser",
         draw: () => `
           ${Art.shadow(680, 760, 150)}
           <g stroke="#5a3a1e" stroke-width="5">
@@ -132,6 +136,7 @@
       },
       {
         id: "patrolGuard",
+        label: "Vagt",
         draw: (api) => distracted(api)
           ? `<g class="bob">${Art.guard(560, 800, 0.95, { facing: 1, mood: "dance" })}</g>`
           : `<g class="pg pg-left">
@@ -150,6 +155,7 @@
       },
       {
         id: "poster",
+        label: "Efterlyst-plakat",
         draw: () => `
           <g transform="rotate(2 905 235)">
             <rect x="830" y="120" width="150" height="220" fill="#f3e6c4" stroke="#c9b48a" stroke-width="4"/>
@@ -160,6 +166,7 @@
       },
       {
         id: "locker",
+        label: "Skab",
         draw: (api) => `
           ${Art.shadow(1100, 765, 80)}
           <rect x="1040" y="270" width="125" height="490" rx="6" fill="#5f7f97" stroke="#3f5566" stroke-width="5"/>
@@ -172,6 +179,7 @@
       },
       {
         id: "deskGuard",
+        label: "Vagt ved skrivebord",
         visible: (api) => !distracted(api),
         draw: () => Art.guard(1320, 720, 0.9, { facing: -1, mood: "eat" }),
         click(api) {
@@ -192,6 +200,7 @@
       },
       {
         id: "dancingRadio",
+        label: "Radio",
         visible: distracted,
         draw: () => `
           <rect x="460" y="760" width="110" height="60" rx="10" fill="#c0392b" stroke="#7b241c" stroke-width="4"/>
@@ -201,6 +210,7 @@
       },
       {
         id: "desk",
+        label: "Skrivebord",
         draw: () => `
           ${Art.shadow(1305, 765, 140)}
           <rect x="1185" y="600" width="240" height="22" rx="4" fill="url(#wood)"/>
@@ -211,6 +221,7 @@
       },
       {
         id: "logbook",
+        label: "Logbog",
         draw: () => `
           <path d="M1230 598 L1270 588 L1310 598 L1310 604 L1230 604 Z" fill="#f4efe0" stroke="#8a7a5a" stroke-width="2"/>
           <line x1="1270" y1="588" x2="1270" y2="604" stroke="#8a7a5a" stroke-width="2"/>
@@ -227,6 +238,7 @@
       },
       {
         id: "exitDoor",
+        label: "Udgang",
         draw: () => `
           <rect x="1440" y="230" width="150" height="415" rx="6" fill="#4b5563" stroke="#2f3640" stroke-width="10"/>
           ${[0, 1, 2, 3].map((i) => `<circle cx="1460" cy="${260 + i * 110}" r="5" fill="#9aa"/><circle cx="1570" cy="${260 + i * 110}" r="5" fill="#9aa"/>`).join("")}

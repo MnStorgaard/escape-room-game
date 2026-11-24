@@ -4,7 +4,7 @@
 //        bucket + rope -> lower into well -> crank handle
 //        crank on gate machine -> gear size puzzle -> gate opens -> twist ending
 (() => {
-  const G = Game;
+  const G = Game.use("prison");
   G.item("rope", "🪢", "reb");
   G.item("pickaxe", "⛏️", "hakke");
   G.item("bone", "🦴", "kødben");
@@ -98,6 +98,7 @@
   G.room({
     id: "yard",
     title: "Gården",
+    particles: { type: "sparks", count: 18, color: "#d9ff7a" },
     intro: "Du er ude i fængselsgården 🌙 Den store port er den sidste vej ud... men den er lukket.",
 
     background: () => `
@@ -116,6 +117,7 @@
     objects: [
       {
         id: "shed",
+        label: "Skur",
         draw: (api) => `
           ${Art.shadow(210, 690, 170)}
           <rect x="60" y="400" width="300" height="290" fill="url(#wood)" stroke="#5a3a1e" stroke-width="5"/>
@@ -128,6 +130,7 @@
       },
       {
         id: "flowerbed",
+        label: "Blomsterbed",
         draw: (api) => `
           <ellipse cx="520" cy="760" rx="140" ry="40" fill="#5a3d26"/>
           ${[[420, 735, "#e74c3c"], [470, 725, "#f1c40f"], [560, 728, "#9b59b6"], [610, 740, "#e67e22"], [455, 770, "#ec407a"], [600, 772, "#f1c40f"]]
@@ -149,6 +152,7 @@
       },
       {
         id: "well",
+        label: "Brønd",
         draw: (api) => `
           ${Art.shadow(800, 765, 120)}
           <rect x="705" y="470" width="14" height="150" fill="url(#darkWood)"/><rect x="881" y="470" width="14" height="150" fill="url(#darkWood)"/>
@@ -176,6 +180,7 @@
       },
       {
         id: "bucket",
+        label: "Spand",
         visible: (api) => !api.has("bucket") && !api.has("bucketRope") && !api.flag("crankFound"),
         draw: () => `
           ${Art.shadow(645, 700, 40)}
@@ -189,6 +194,7 @@
       },
       {
         id: "gate",
+        label: "Den store port",
         draw: (api) => api.flag("gateOpen")
           ? `<rect x="1140" y="250" width="340" height="400" fill="#141826"/>`
           : `<path d="M1140 650 V330 Q1310 210 1480 330 V650 Z" fill="url(#darkWood)" stroke="#2a1a0e" stroke-width="10"/>
@@ -202,6 +208,7 @@
       },
       {
         id: "machine",
+        label: "Port-maskine",
         draw: (api) => `
           <rect x="1495" y="430" width="95" height="150" rx="8" fill="#4b5563" stroke="#2f3640" stroke-width="5"/>
           <g transform="translate(1542 480) scale(.5)">${gear(0, 0, 50, 12, "#c9a227")}</g>
@@ -223,6 +230,7 @@
       },
       {
         id: "dog",
+        label: "Vagthund",
         draw: (api) => `
           <path d="M1010 760 L1010 640 L1090 580 L1170 640 L1170 760 Z" fill="#8e5b34" stroke="#4a2e18" stroke-width="5"/>
           <path d="M1060 760 V690 Q1090 660 1120 690 V760 Z" fill="#2a1a0e"/>
