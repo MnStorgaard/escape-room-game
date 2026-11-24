@@ -73,6 +73,7 @@ const Game = (() => {
     if (!obj) return;
     if (state.selected) {
       const itemId = state.selected;
+      api.say("");
       if (obj.use && obj.use(itemId, api)) {
         state.selected = null;
         renderInventory();
