@@ -1,20 +1,29 @@
-# Detektiven i fængslet
+# Flugt-eventyr – 5 escape games
 
-A browser escape room for kids aged 6-9 (Danish). 3 rooms, 12 puzzles, drawn SVG graphics, no external files.
+Browser escape rooms for kids aged 6-9 (Danish). 5 games × 3 rooms, drawn SVG graphics, generated sound, no external files.
 
 ## Run
 - `node serve.js` and open http://localhost:8080
-- Or just double-click `index.html`
-- Testing shortcut: `http://localhost:8080/?room=corridor` or `?room=yard` starts in that room
+- Or double-click `index.html`
+- Testing shortcuts: `?game=space` opens a game's intro, `?game=space&room=airlock` starts in that room
 
-## Rooms
-1. **Cellen** – pattern lock, count clues for a 3-digit code, mirror writing, magnet + string to fish the key from the drain
-2. **Gangen** – sneak past the guard (timing), animal-order logic, radio + batteries to distract the desk guard, math code for the door
-3. **Gården** – shadow-matching lock, dig up a bone for the dog, bucket + rope in the well, pick the right gear for the gate
+## Games
+| # | Game | Difficulty | Special mechanics |
+|---|------|------------|-------------------|
+| 1 | 🦖 Dinosaur-museet | Easy | counting, feed the herbivore, flashlight in cave, size ordering |
+| 2 | 🔒 Fængslet | Normal | mirror writing, sneak past guard (timing), radio distraction |
+| 3 | 🏫 Skolen | Normal | letter-number cipher + word lock, hide from janitor (reaction), piano tones, logic, alarm wires |
+| 4 | 🚀 Rumstationen | Normal+ | gravity switch, wire mapping, robot needs 2 parts, lamp code (4-2-1), airlock procedure, radar coordinates |
+| 5 | 👻 Spøgelseshuset | Hard | darkness + flashlight, eyes that follow you, ghost scares, clues across rooms, invisible ink, music box memory |
 
 ## Files
-- `engine.js` – game state, rooms, inventory (select / combine / use), popups, hints, timer
-- `art.js` – shared SVG patterns and characters (guard, dog, Mester Mus)
-- `rooms/*.js` – one file per room: drawing, objects, puzzles, hints
-- `sound.js` – generated sound effects and music
+- `engine.js` – menu, intro, state, inventory (select / combine / use), puzzle widgets (code, pick, cycle, sequence, word), hints, timer, darkness, hover labels
+- `art.js` – shared SVG patterns, characters, particles
+- `games/<game>/*.js` – one folder per game: `Game.define(...)` + rooms
+- `sound.js` – generated sound effects and per-game music
 - `index.html`, `style.css` – page layout and look
+
+## Add a new game
+1. Create `games/<id>/<id>.js` with `Game.define("<id>", { title, emoji, difficulty, minutes, accent, tagline, story, music })`
+2. Add rooms with `G.room({ id, title, intro, background, objects, goal, hints })`
+3. Add a `<script>` tag in `index.html` (the order there = order on the menu)

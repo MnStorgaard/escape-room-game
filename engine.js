@@ -47,11 +47,13 @@ const Game = (() => {
       state.inventory.push(id);
       Sound.play("item");
       renderInventory(id);
+      render(); // scenes may look different depending on what you carry
     },
     take(id) {
       state.inventory = state.inventory.filter((i) => i !== id);
       if (state.selected === id) state.selected = null;
       renderInventory();
+      render();
     },
     say(text) { $("message").innerHTML = text; },
     sound: (name) => Sound.play(name),
@@ -65,6 +67,7 @@ const Game = (() => {
     every(ms, fn) { roomTimers.push(setInterval(fn, ms)); },
     later(ms, fn) { roomTimers.push(setTimeout(fn, ms)); },
     itemName: (id) => game.items[id].name,
+    pointer: () => pointer,
     codeLock,
     pickLock,
     cycleLock,

@@ -89,6 +89,11 @@ button.primary:hover { background: var(--accent); filter: brightness(1.12); }
 @keyframes pulse { 50% { opacity: .45; } }
 .spin { animation: spin 8s linear infinite; transform-box: fill-box; transform-origin: center; }
 @keyframes spin { to { transform: rotate(360deg); } }
+.rock { animation: rock 2.6s infinite ease-in-out; }
+@keyframes rock { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
+.ghost-flash { animation: ghostflash 1.6s ease-in-out; }
+@keyframes ghostflash { 0% { opacity: 0; } 25% { opacity: .75; } 60% { opacity: .5; } 100% { opacity: 0; } }
+.clock-btn { padding: 4px 8px; }
 .sweep { animation: sweep 6s infinite ease-in-out; transform-origin: 120px 170px; }
 @keyframes sweep { 50% { transform: rotate(35deg); } }
 
