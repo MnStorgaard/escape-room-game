@@ -57,6 +57,7 @@ const Game = (() => {
     sound: (name) => Sound.play(name),
     modal: openModal,
     close: closeModal,
+    modalOpen: () => !$("modal").classList.contains("hidden"),
     shake: shakeModal,
     render: () => render(),
     goTo: enterRoom,
@@ -68,7 +69,24 @@ const Game = (() => {
     pickLock,
     cycleLock,
     sequenceLock,
+    wordLock,
   };
+
+  // Type a word. opts: { icon, text, clue, answer, onSolve }
+  function wordLock(opts) {
+    openModal(`${head(opts)}
+      <div class="row"><input id="wordInput" class="word-input" maxlength="${opts.answer.length + 4}" autocomplete="off" placeholder="${"_ ".repeat(opts.answer.length).trim()}"></div>
+      <div class="row"><button class="action" id="tryWord">Prøv</button></div>`, (root) => {
+      const input = root.querySelector("#wordInput");
+      input.focus();
+      const check = () => {
+        if (input.value.trim().toUpperCase() === opts.answer.toUpperCase()) { Sound.play("success"); opts.onSolve(); }
+        else { shakeModal(); input.value = ""; input.focus(); }
+      };
+      root.querySelector("#tryWord").addEventListener("click", check);
+      input.addEventListener("keydown", (e) => { if (e.key === "Enter") check(); });
+    });
+  }
 
   // Fake API used for menu thumbnails (nothing solved, nothing in inventory)
   const thumbApi = { ...api, flag: () => false, get: () => undefined, has: () => false };
@@ -184,12 +202,21 @@ const Game = (() => {
   }
 
   // ---------- Popup ----------
-  function openModal(html, onMount) {
+  // locked = the player cannot close it themselves (used for short "freeze" events)
+  let modalLocked = false;
+  function openModal(html, onMount, locked = false) {
+    modalLocked = locked;
+    $("modalClose").classList.toggle("hidden", locked);
     $("modalContent").innerHTML = html;
     $("modal").classList.remove("hidden");
     if (onMount) onMount($("modalContent"));
   }
-  function closeModal() { $("modal").classList.add("hidden"); }
+  function closeModal(force) {
+    if (modalLocked && force !== true) return;
+    modalLocked = false;
+    $("modalClose").classList.remove("hidden");
+    $("modal").classList.add("hidden");
+  }
   function shakeModal() {
     const box = $("modalBox");
     box.classList.remove("shake");
@@ -303,7 +330,7 @@ const Game = (() => {
 
   function enterRoom(id) {
     clearTimers();
-    closeModal();
+    closeModal(true);
     state.room = id;
     state.selected = null;
     $("scene").className = "";
@@ -334,7 +361,7 @@ const Game = (() => {
   function showMenu() {
     clearInterval(timerId);
     clearTimers();
-    closeModal();
+    closeModal(true);
     Sound.stopMusic();
     document.body.style.removeProperty("--accent");
     showScreen("menuScreen");
@@ -380,7 +407,7 @@ const Game = (() => {
   function win(html) {
     clearInterval(timerId);
     clearTimers();
-    closeModal();
+    closeModal(true);
     Sound.stopMusic();
     Sound.play("win");
     const hintText = state.hintsUsed === 0 ? "helt uden hjælp! 🏆" : `og brugte ${state.hintsUsed} × 💡`;
