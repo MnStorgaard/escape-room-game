@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Detektiven i fængslet</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <header id="topbar">
+    <div id="timer">⏱️ 00:00</div>
+    <div id="title">🕵️ Detektiven i fængslet</div>
+    <div id="buttons">
+      <button id="hintBtn" title="Hjælp">💡 Hjælp</button>
+      <button id="soundBtn" title="Lyd til/fra">🔊</button>
+    </div>
+  </header>
+
+  <main id="scene">
+    <div class="floor"></div>
+    <!-- Room objects are created by game.js -->
+  </main>
+
+  <div id="message"></div>
+
+  <footer id="inventory">
+    <span class="inv-label">🎒</span>
+    <div id="invItems"></div>
+  </footer>
+</div>
+
+<!-- Popup window for puzzles -->
+<div id="modal" class="hidden">
+  <div id="modalBox">
+    <button id="modalClose">✖</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<!-- Start and end screens -->
+<div id="startScreen" class="screen">
+  <div class="screen-box">
+    <div class="big">🕵️🔒</div>
+    <h1>Detektiven i fængslet</h1>
+    <p>Den frække tyv <b>Mester Mus</b> 🐭 har snydt dig!<br>
+       Nu sidder DU i fængsel, selvom du er uskyldig.</p>
+    <p>Find spor, løs gåderne og slip ud,<br>før vagten vågner! 💂💤</p>
+    <p class="small">Klik på ting i rummet for at undersøge dem.</p>
+    <button id="startBtn" class="primary">▶️ Start</button>
+  </div>
+</div>
+
+<div id="endScreen" class="screen hidden">
+  <div class="screen-box">
+    <div class="big">🎉🕵️🎉</div>
+    <h1>Du slap ud!</h1>
+    <p id="endText"></p>
+    <button id="againBtn" class="primary">🔄 Spil igen</button>
+  </div>
+</div>
+
+<script src="sound.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
