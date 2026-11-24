@@ -1,0 +1,208 @@
+/* ============================================================
+   Christmas theme + shared UX extras (notebook, toast, fx, progress)
+   Theme rules only apply with body.theme-xmas.
+   ============================================================ */
+
+/* ---------- UX extras (used by any game that turns them on) ---------- */
+#fx { position: fixed; inset: 0; pointer-events: none; z-index: 40; }
+.fx-spark {
+  position: fixed; transform: translate(-50%, -50%); pointer-events: none;
+  animation: fxspark .85s cubic-bezier(.2, .7, .3, 1) forwards;
+}
+@keyframes fxspark {
+  0% { opacity: 1; transform: translate(-50%, -50%) scale(.4); }
+  70% { opacity: 1; }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1.1) rotate(40deg); }
+}
+.fx-fly {
+  position: fixed; font-size: 2.4rem; transform: translate(0, 0); margin: -1.2rem 0 0 -1.2rem;
+  transition: transform .55s cubic-bezier(.5, -0.3, .6, 1), opacity .55s; pointer-events: none;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,.4));
+}
+.inv-item.arriving { animation: pop .45s .45s both; }
+
+#toast {
+  position: fixed; top: 78px; left: 50%; transform: translate(-50%, -20px);
+  background: #fffaf0; color: #3a2a10; border: 2px solid var(--accent); border-radius: 30px;
+  padding: 8px 18px; font-size: 1rem; z-index: 35; box-shadow: 0 8px 24px rgba(0,0,0,.35);
+  pointer-events: none; opacity: 0;
+}
+#toast.show { animation: toast 3.2s ease; }
+@keyframes toast { 0% { opacity: 0; transform: translate(-50%, -20px); } 10%, 85% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; transform: translate(-50%, -20px); } }
+
+#noteBtn .count:empty { display: none; }
+#noteBtn .count { background: #e53935; color: #fff; border-radius: 12px; padding: 0 7px; font-size: .85rem; margin-left: 2px; }
+.pulse-btn { animation: pulsebtn 1.2s ease 2; }
+@keyframes pulsebtn { 50% { transform: scale(1.12); box-shadow: 0 0 0 6px rgba(255, 210, 80, .35); } }
+
+.notebook { text-align: left; max-height: 60vh; overflow: auto; display: flex; flex-direction: column; gap: 10px; }
+.note-entry { display: flex; gap: 12px; background: #fff; border-radius: 12px; padding: 10px 12px; border-left: 5px solid var(--accent); line-height: 1.45; }
+.note-num { font-weight: bold; color: #fff; background: var(--accent); border-radius: 50%; min-width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
+
+.prog { display: flex; align-items: center; justify-content: center; gap: 0; }
+.prog-dot { width: 26px; height: 26px; border-radius: 50%; border: 2px solid rgba(255,255,255,.35); display: inline-flex; align-items: center; justify-content: center; font-size: .8rem; color: rgba(255,255,255,.6); }
+.prog-dot.done { background: var(--accent); border-color: var(--accent); color: #2a1a05; font-weight: bold; }
+.prog-dot.now { border-color: var(--accent); color: #fff; box-shadow: 0 0 0 4px rgba(232, 176, 74, .25); font-weight: bold; }
+.prog-line { width: 22px; height: 2px; background: rgba(255,255,255,.3); }
+.prog-title { font-size: 1rem; margin-top: 3px; }
+
+.inv-item.labelled { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 72px; min-width: 76px; padding: 4px 8px; gap: 2px; }
+.inv-item.labelled .inv-icon { font-size: 1.8rem; line-height: 1; }
+.inv-item.labelled .inv-name { font-size: .68rem; line-height: 1.1; max-width: 90px; color: #5a3a10; font-weight: bold; }
+
+#modalBox.wide { width: min(96vw, 1020px); padding: 22px 20px 18px; }
+.seq-btn.hit { animation: hit .25s; }
+@keyframes hit { 50% { transform: scale(.88); filter: brightness(1.3); } }
+
+.game-card { position: relative; }
+.new-badge { position: absolute; top: 10px; right: 10px; background: #e53935; color: #fff; font-weight: bold; padding: 4px 12px; border-radius: 20px; font-size: .9rem; box-shadow: 0 4px 12px rgba(0,0,0,.4); animation: pulse 1.6s infinite; }
+.card-art { position: relative; }
+
+/* ---------- Minigame ---------- */
+.mg-wrap { position: relative; border-radius: 16px; overflow: hidden; box-shadow: 0 0 0 4px #d4a64a, 0 10px 30px rgba(0,0,0,.4); }
+.mg-wrap canvas { width: 100%; aspect-ratio: 16 / 9; display: block; cursor: pointer; touch-action: manipulation; }
+.mg-overlay { position: absolute; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  background: rgba(8, 14, 40, .72); color: #fff; padding: 24px; text-align: center; font-size: 1.15rem; backdrop-filter: blur(2px); }
+.mg-overlay.show { display: flex; animation: pop .3s; }
+.mg-overlay p { margin: 4px 0; max-width: 560px; }
+.mg-title { font-family: Georgia, serif; font-size: 2.4rem; color: #ffd86b; margin-bottom: 6px; }
+.mg-tip { background: rgba(255, 216, 107, .15); border-radius: 10px; padding: 6px 12px; }
+.mg-code { font-family: Georgia, serif; color: #ffd86b; letter-spacing: 6px; }
+.mg-code.big { font-size: 3rem; }
+.mg-btn { margin-top: 10px; font-size: 1.3rem; padding: 12px 30px; }
+.mg-help { margin: 10px 0 0; }
+
+/* ---------- Christmas theme ---------- */
+body.theme-xmas {
+  --accent: #e8b04a;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(255, 200, 120, .12), transparent 40%),
+    radial-gradient(circle at 80% 90%, rgba(255, 120, 80, .1), transparent 40%),
+    linear-gradient(#3b0f1a, #1c070d);
+}
+body.theme-xmas::before {
+  content: ""; position: fixed; inset: -100px 0 0 0; pointer-events: none; z-index: 0;
+  background-image:
+    radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,.7), transparent),
+    radial-gradient(3px 3px at 120px 80px, rgba(255,255,255,.5), transparent),
+    radial-gradient(2px 2px at 220px 150px, rgba(255,255,255,.6), transparent),
+    radial-gradient(3px 3px at 60px 200px, rgba(255,255,255,.4), transparent),
+    radial-gradient(2px 2px at 170px 260px, rgba(255,255,255,.6), transparent);
+  background-size: 260px 300px;
+  animation: pagesnow 18s linear infinite;
+  opacity: .55;
+}
+@keyframes pagesnow { from { transform: translateY(-300px); } to { transform: translateY(0); } }
+body.theme-xmas #app { position: relative; z-index: 1; }
+
+.theme-xmas h1, .theme-xmas h2, .theme-xmas #banner, .theme-xmas .prog-title, .theme-xmas .note-text { font-family: Georgia, "Times New Roman", serif; }
+
+.theme-xmas #topbar button {
+  background: linear-gradient(#9b2335, #6e1626); color: #fff4dc; border: 2px solid #d4a64a;
+  box-shadow: 0 3px 0 #3a0a12, inset 0 1px 0 rgba(255,255,255,.25);
+}
+.theme-xmas #topbar button:hover { filter: brightness(1.15); }
+.theme-xmas #roomName { color: #ffe3a3; }
+
+.theme-xmas #scene {
+  border: 6px solid #c9963a; border-radius: 22px;
+  box-shadow: 0 0 0 3px #5e1220, 0 14px 50px rgba(0,0,0,.65), 0 0 60px rgba(255, 190, 90, .15);
+}
+.theme-xmas #scene.room-enter { animation: sceneIn .8s ease; }
+@keyframes sceneIn { 0% { opacity: 0; filter: blur(8px) brightness(1.6); transform: scale(1.03); } 100% { opacity: 1; filter: none; transform: none; } }
+.theme-xmas .hot:hover { filter: drop-shadow(0 0 10px #ffe08a) drop-shadow(0 0 3px #fff4c0) brightness(1.08); }
+
+.theme-xmas #message {
+  background: #fdf3dc; color: #3a2410; border: 2px solid #d4a64a; border-left: 2px solid #d4a64a;
+  padding-left: 64px; position: relative; min-height: 3em; display: flex; align-items: center;
+  box-shadow: 0 4px 14px rgba(0,0,0,.3);
+}
+.theme-xmas #message::before {
+  content: "🧝"; position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+  width: 42px; height: 42px; border-radius: 50%; background: #2e6b3f; border: 2px solid #d4a64a;
+  display: flex; align-items: center; justify-content: center; font-size: 1.6rem;
+}
+.theme-xmas #message.msg-in { animation: msgIn .35s ease; }
+@keyframes msgIn { from { opacity: .2; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+.theme-xmas #inventory {
+  background: linear-gradient(#8b1d2c, #5e1220); border: 3px dashed #d4a64a; border-radius: 18px;
+  box-shadow: inset 0 0 30px rgba(0,0,0,.35), 0 6px 18px rgba(0,0,0,.35); min-height: 86px;
+}
+.theme-xmas .inv-label { font-size: 0; }
+.theme-xmas .inv-label::after { content: "🎁"; font-size: 2.2rem; }
+.theme-xmas .inv-empty { color: #ffd9a8; opacity: .7; font-style: italic; }
+.theme-xmas .inv-item { background: #fff7e6; border: 2px solid #d4a64a; box-shadow: 0 3px 0 #a3762a; }
+.theme-xmas .inv-item:hover { background: #fffdf5; transform: translateY(-2px); }
+.theme-xmas .inv-item.selected { background: #fff1b8; border-color: #ffd23f; box-shadow: 0 0 0 3px #ffd23f, 0 0 20px #ffd23f; transform: translateY(-5px); }
+
+.theme-xmas #modal { background: rgba(30, 6, 12, .72); backdrop-filter: blur(3px); }
+.theme-xmas #modalBox {
+  background: linear-gradient(#fffaf0, #f7ead0); border: none; border-radius: 22px;
+  padding-top: 42px; box-shadow: 0 20px 60px rgba(0,0,0,.55), 0 0 0 4px #d4a64a;
+  overflow: auto;
+}
+.theme-xmas #modalBox::before {
+  content: ""; position: absolute; left: 0; right: 0; top: 0; height: 18px;
+  background: repeating-linear-gradient(-45deg, #c0392b 0 14px, #fff 14px 28px); border-radius: 22px 22px 0 0;
+}
+.theme-xmas #modalBox::after { content: "🎀"; position: absolute; top: 2px; left: 50%; transform: translateX(-50%); font-size: 2rem; }
+.theme-xmas #modalClose { top: 24px; background: #f0dfbd; }
+.theme-xmas .action, .theme-xmas button.primary { background: linear-gradient(#d23a3a, #a42222); color: #fff8e6; border: 2px solid #d4a64a; box-shadow: 0 3px 0 #6a1010; }
+.theme-xmas .action:hover, .theme-xmas button.primary:hover { background: linear-gradient(#e04848, #b42a2a); filter: none; }
+.theme-xmas .choice { background: #fff; border: 2px solid #e6cf9f; }
+.theme-xmas .choice.picked { border-color: #c0392b; background: #ffe9e4; box-shadow: 0 0 0 3px rgba(192, 57, 43, .25); }
+.theme-xmas .clue-box { border-color: #c0392b; background: #fffdf8; }
+.theme-xmas .keypad button { background: linear-gradient(#2e6b3f, #1f4d2c); border: 2px solid #d4a64a; }
+.theme-xmas .lock-display { background: #1f1410; color: #ffd86b; border: 2px solid #d4a64a; }
+
+.theme-xmas .screen { background: radial-gradient(circle at 50% 20%, #6a1a2a, #1c070d); }
+.theme-xmas #introArt { border-color: #d4a64a; }
+.theme-xmas #banner { color: #ffe3a3; text-shadow: 0 0 30px rgba(255, 200, 90, .6), 0 4px 18px #000; }
+
+/* Scene animations used by the Christmas rooms */
+.x-spin { animation: xspin 3s linear infinite; transform-box: fill-box; transform-origin: center; }
+.x-spin-rev { animation: xspin 2s linear infinite reverse; transform-box: fill-box; transform-origin: center; }
+@keyframes xspin { to { transform: rotate(360deg); } }
+.x-bulb { animation: xbulb 2.2s infinite ease-in-out; }
+@keyframes xbulb { 50% { opacity: .35; } }
+.x-snow { animation: xsnow linear infinite; }
+@keyframes xsnow { from { transform: translate(0, -40px); } to { transform: translate(24px, 300px); } }
+.x-flame { animation: xflame 1.3s infinite ease-in-out; transform-box: fill-box; transform-origin: bottom center; }
+@keyframes xflame { 50% { transform: scaleY(1.15) scaleX(.9); } }
+.x-ring { animation: xring .9s ease 2; transform-box: fill-box; transform-origin: top center; }
+@keyframes xring { 25% { transform: rotate(18deg); } 75% { transform: rotate(-18deg); } }
+.x-shake { animation: xshake .8s ease; transform-box: fill-box; transform-origin: bottom center; }
+@keyframes xshake { 15%, 45%, 75% { transform: rotate(-12deg); } 30%, 60%, 90% { transform: rotate(12deg); } }
+.x-swirl { animation: xswirl 2.4s ease-out forwards; transform-box: fill-box; transform-origin: center; }
+@keyframes xswirl { 0% { transform: rotate(0) scale(1.1); opacity: 1; } 100% { transform: rotate(240deg) scale(.6); opacity: 0; } }
+.x-pop { animation: xpop .6s cubic-bezier(.3, 1.6, .5, 1) both; transform-box: fill-box; transform-origin: bottom center; }
+@keyframes xpop { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+.x-drop { animation: xdrop .7s cubic-bezier(.5, 0, .7, 1.4) both; }
+@keyframes xdrop { 0% { transform: translateY(-160px); opacity: 0; } 100% { transform: none; opacity: 1; } }
+.x-lid { animation: xlid .7s ease both; transform-box: fill-box; transform-origin: left bottom; }
+@keyframes xlid { 0% { transform: rotate(0); } 100% { transform: rotate(-35deg); } }
+.x-slide-in { animation: xslidein 1.6s ease-in-out both; }
+@keyframes xslidein { 0% { transform: translateX(-520px); } 100% { transform: none; } }
+.x-trot { animation: xtrot 1.8s ease-in-out both; }
+@keyframes xtrot { 0% { transform: translateX(520px); } 100% { transform: none; } }
+.x-bob { animation: xbob 3s ease-in-out infinite; }
+@keyframes xbob { 50% { transform: translateY(-5px); } }
+.x-breathe { animation: xbreathe 3.6s ease-in-out infinite; transform-box: fill-box; transform-origin: bottom center; }
+@keyframes xbreathe { 50% { transform: scaleY(1.025); } }
+.x-wiggle { animation: xwiggle 2.8s ease-in-out infinite; transform-box: fill-box; transform-origin: bottom center; }
+@keyframes xwiggle { 0%, 70%, 100% { transform: rotate(0); } 75% { transform: rotate(-6deg); } 82% { transform: rotate(5deg); } 89% { transform: rotate(-3deg); } }
+.x-glow { animation: xglow 2s ease-in-out infinite; }
+@keyframes xglow { 50% { opacity: .55; } }
+.x-belt { animation: xbelt .6s linear infinite; }
+@keyframes xbelt { to { stroke-dashoffset: -40; } }
+.x-gift-out { animation: xgiftout 1.6s ease-in forwards; }
+@keyframes xgiftout { 0% { transform: none; opacity: 1; } 85% { opacity: 1; } 100% { transform: translateX(320px); opacity: 0; } }
+.x-gift-gone { display: none; }
+.x-roll { animation: xroll 1.3s cubic-bezier(.4, 0, .4, 1.2) both; }
+@keyframes xroll { from { transform: translateX(var(--from, 300px)); opacity: .2; } to { transform: none; opacity: 1; } }
+
+/* Pjok peeks out from hiding places (toggled with a class on #scene, no re-render) */
+.pjok-peek { opacity: 0; pointer-events: none; }
+#scene.peek-0 .pjok-peek.p0, #scene.peek-1 .pjok-peek.p1, #scene.peek-2 .pjok-peek.p2 { animation: peek 2.6s ease; pointer-events: auto; }
+@keyframes peek { 0% { opacity: 0; transform: translateY(40px); } 20%, 75% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translateY(40px); } }

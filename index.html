@@ -3,9 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Flugt-eventyr – 5 escape-spil</title>
+<title>Flugt-eventyr – escape-spil for børn</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗝️</text></svg>">
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="theme-xmas.css">
 </head>
 <body>
 <div id="app">
@@ -16,6 +17,7 @@
     </div>
     <div id="roomName"></div>
     <div id="buttons">
+      <button id="noteBtn" class="hidden" title="Notesbog med de spor, du har fundet">📓 <span class="btn-label">Notesbog</span> <span id="noteCount" class="count"></span></button>
       <button id="hintBtn" title="Få et tip til næste skridt">💡 Ledetråd</button>
       <button id="helpBtn" title="Sådan spiller du">❓ Hjælp</button>
       <button id="soundBtn" title="Lyd til/fra">🔊</button>
@@ -45,6 +47,8 @@
 
 <div id="banner"></div>
 <div id="tip"></div>
+<div id="toast"></div>
+<div id="fx"></div>
 
 <div id="modal" class="hidden">
   <div id="modalBox">
@@ -89,7 +93,7 @@
 
 <div id="endScreen" class="screen hidden">
   <div class="screen-box">
-    <div class="big">🎉🕵️🎉</div>
+    <div class="big" id="endEmoji">🎉🕵️🎉</div>
     <h1 id="endTitle">Du slap ud!</h1>
     <p id="endText"></p>
     <div class="row">
@@ -110,6 +114,8 @@
 <script src="games/prison/yard.js"></script>
 <script src="games/school/school.js"></script>
 <script src="games/space/space.js"></script>
+<script src="games/xmas/delivery.js"></script>
+<script src="games/xmas/xmas.js"></script>
 <script src="games/spooky/spooky.js"></script>
 <script>Game.init();</script>
 </body>

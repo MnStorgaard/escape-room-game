@@ -1,6 +1,8 @@
 // Core game engine: several games, each with rooms, items and recipes.
 // Handles menu, intro, state, inventory (select / combine / use), popups, puzzle widgets,
 // hints, timer, darkness/flashlight, particles and hover labels.
+// Optional per-game UX extras (meta.ux): notebook, fx (sparkles, flying items, room fades),
+// itemLabels (names under inventory icons), progress (room dots) and a CSS theme (meta.theme).
 const Game = (() => {
   const games = {};
   const GAME_ORDER = [];
@@ -9,9 +11,11 @@ const Game = (() => {
   let timerId = null;
   let roomTimers = [];
   let pointer = { x: 800, y: 450 };
+  let lastClient = { x: innerWidth / 2, y: innerHeight / 2 };
 
   const $ = (id) => document.getElementById(id);
   const room = () => game.rooms[state.room];
+  const ux = (k) => !!(game && game.ux && game.ux[k]);
 
   // ---------- Definitions (called from game files) ----------
   function builder(g) {
@@ -21,7 +25,7 @@ const Game = (() => {
       room: (def) => { g.rooms[def.id] = def; g.order.push(def.id); },
     };
   }
-  // meta: { title, emoji, difficulty (1-4), tagline, story, minutes, accent, music }
+  // meta: { title, emoji, difficulty (1-4), tagline, story, minutes, accent, music, ux, theme, winEmoji }
   function define(id, meta) {
     games[id] = { id, ...meta, rooms: {}, order: [], items: {}, recipes: {} };
     GAME_ORDER.push(id);
@@ -40,13 +44,16 @@ const Game = (() => {
   const api = {
     flag: (k) => !!state.flags[k],
     get: (k) => state.flags[k],
-    set: (k, v = true) => { state.flags[k] = v; render(); },
+    set: (k, v = true) => { state.flags[k] = v; state.just[k] = Date.now(); render(); },
+    // true right after a flag was set: use it to play an "appear" animation only once
+    just: (k) => !!(state && state.just[k] && Date.now() - state.just[k] < 900),
     has: (id) => state.inventory.includes(id),
     give(id) {
       if (api.has(id)) return;
       state.inventory.push(id);
       Sound.play("item");
       renderInventory(id);
+      if (ux("fx")) flyItem(id);
       render(); // scenes may look different depending on what you carry
     },
     take(id) {
@@ -55,8 +62,12 @@ const Game = (() => {
       renderInventory();
       render();
     },
-    say(text) { $("message").innerHTML = text; },
-    sound: (name) => Sound.play(name),
+    say(text) {
+      const m = $("message");
+      m.innerHTML = text;
+      if (ux("fx")) { m.classList.remove("msg-in"); void m.offsetWidth; m.classList.add("msg-in"); }
+    },
+    sound: (name) => (name === "success" ? success() : Sound.play(name)),
     modal: openModal,
     close: closeModal,
     modalOpen: () => !$("modal").classList.contains("hidden"),
@@ -68,12 +79,85 @@ const Game = (() => {
     later(ms, fn) { roomTimers.push(setTimeout(fn, ms)); },
     itemName: (id) => game.items[id].name,
     pointer: () => pointer,
+    burst: (x, y, n) => burst(x ?? lastClient.x, y ?? lastClient.y, n),
+    note: addNote,
     codeLock,
     pickLock,
     cycleLock,
     sequenceLock,
     wordLock,
   };
+
+  // ---------- Effects ----------
+  function success() {
+    Sound.play("success");
+    if (ux("fx")) burst(lastClient.x, lastClient.y);
+  }
+
+  function burst(x, y, n = 14) {
+    const layer = $("fx");
+    const chars = game.fxChars || ["✨", "⭐", "❄️"];
+    for (let i = 0; i < n; i++) {
+      const s = document.createElement("span");
+      s.className = "fx-spark";
+      s.textContent = chars[i % chars.length];
+      const a = (Math.PI * 2 * i) / n + Math.random() * 0.5;
+      const d = 50 + Math.random() * 70;
+      s.style.left = x + "px";
+      s.style.top = y + "px";
+      s.style.setProperty("--dx", Math.cos(a) * d + "px");
+      s.style.setProperty("--dy", Math.sin(a) * d - 20 + "px");
+      s.style.fontSize = 12 + Math.random() * 14 + "px";
+      layer.appendChild(s);
+      setTimeout(() => s.remove(), 900);
+    }
+  }
+
+  function flyItem(id) {
+    const target = $("invItems").querySelector(`[data-id="${id}"]`);
+    if (!target) return;
+    const r = target.getBoundingClientRect();
+    const s = document.createElement("span");
+    s.className = "fx-fly";
+    s.textContent = game.items[id].icon;
+    s.style.left = lastClient.x + "px";
+    s.style.top = lastClient.y + "px";
+    $("fx").appendChild(s);
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      s.style.transform = `translate(${r.left + r.width / 2 - lastClient.x}px, ${r.top + r.height / 2 - lastClient.y}px) scale(.6)`;
+      s.style.opacity = ".4";
+    }));
+    setTimeout(() => s.remove(), 650);
+  }
+
+  function toast(html) {
+    const t = $("toast");
+    t.innerHTML = html;
+    t.classList.remove("show");
+    void t.offsetWidth;
+    t.classList.add("show");
+  }
+
+  // ---------- Notebook ----------
+  function addNote(id, title, html) {
+    if (!ux("notebook") || state.notes.some((n) => n.id === id)) return;
+    state.notes.push({ id, title, html });
+    updateNoteBtn(true);
+    toast(`📓 Skrevet i notesbogen: <b>${title}</b>`);
+  }
+  function updateNoteBtn(pulse) {
+    const b = $("noteBtn");
+    b.classList.toggle("hidden", !ux("notebook"));
+    $("noteCount").textContent = state && state.notes.length ? state.notes.length : "";
+    if (pulse) { b.classList.remove("pulse-btn"); void b.offsetWidth; b.classList.add("pulse-btn"); }
+  }
+  function showNotebook() {
+    Sound.play("click");
+    const list = state.notes.length
+      ? state.notes.map((n, i) => `<div class="note-entry"><div class="note-num">${i + 1}</div><div><b>${n.title}</b><div>${n.html}</div></div></div>`).join("")
+      : `<p><i>Tom endnu. Når du finder spor, skriver du dem automatisk ned her.</i></p>`;
+    openModal(`<div class="modal-icon">📓</div><h2 class="help-title">Notesbog</h2><div class="notebook">${list}</div>`, null, false, { cls: "notebook-box" });
+  }
 
   // Type a word. opts: { icon, text, clue, answer, onSolve }
   function wordLock(opts) {
@@ -83,7 +167,7 @@ const Game = (() => {
       const input = root.querySelector("#wordInput");
       input.focus();
       const check = () => {
-        if (input.value.trim().toUpperCase() === opts.answer.toUpperCase()) { Sound.play("success"); opts.onSolve(); }
+        if (input.value.trim().toUpperCase() === opts.answer.toUpperCase()) { success(); opts.onSolve(); }
         else { shakeModal(); input.value = ""; input.focus(); }
       };
       root.querySelector("#tryWord").addEventListener("click", check);
@@ -92,7 +176,7 @@ const Game = (() => {
   }
 
   // Fake API used for menu thumbnails (nothing solved, nothing in inventory)
-  const thumbApi = { ...api, flag: () => false, get: () => undefined, has: () => false };
+  const thumbApi = { ...api, flag: () => false, get: () => undefined, has: () => false, just: () => false };
 
   // ---------- Rendering ----------
   function roomSvg(r, a, withDark) {
@@ -118,10 +202,22 @@ const Game = (() => {
   }
 
   function renderInventory(newId) {
+    const labels = ux("itemLabels");
     $("invItems").innerHTML = state.inventory
-      .map((id) => `<button class="inv-item ${state.selected === id ? "selected" : ""} ${newId === id ? "new" : ""}"
-        data-id="${id}" title="${game.items[id].name}">${game.items[id].icon}</button>`)
-      .join("") || `<span class="inv-empty">Tom</span>`;
+      .map((id) => `<button class="inv-item ${state.selected === id ? "selected" : ""} ${newId === id ? (ux("fx") ? "arriving" : "new") : ""} ${labels ? "labelled" : ""}"
+        data-id="${id}" title="${game.items[id].name}"><span class="inv-icon">${game.items[id].icon}</span>${labels ? `<span class="inv-name">${game.items[id].name}</span>` : ""}</button>`)
+      .join("") || `<span class="inv-empty">${labels ? "Din sæk er tom – find ting i rummet" : "Tom"}</span>`;
+  }
+
+  function renderRoomName() {
+    const r = room();
+    const n = game.order.indexOf(state.room) + 1;
+    if (!ux("progress")) {
+      $("roomName").textContent = `${game.emoji} Rum ${n}/${game.order.length}: ${r.title}`;
+      return;
+    }
+    const dots = game.order.map((id, i) => `<span class="prog-dot ${i < n - 1 ? "done" : i === n - 1 ? "now" : ""}" title="${game.rooms[id].title}">${i < n - 1 ? "✓" : i + 1}</span>`).join("<span class=\"prog-line\"></span>");
+    $("roomName").innerHTML = `<div class="prog">${dots}</div><div class="prog-title">${r.title}</div>`;
   }
 
   // ---------- Input ----------
@@ -183,7 +279,7 @@ const Game = (() => {
       tryCombine(state.selected, id);
     } else {
       state.selected = id;
-      api.say(`Du holder: ${game.items[id].icon} <b>${game.items[id].name}</b>. Klik på noget i rummet for at bruge den, eller på en anden ting i rygsækken for at sætte dem sammen.`);
+      api.say(`Du holder: ${game.items[id].icon} <b>${game.items[id].name}</b>. Klik på noget i rummet for at bruge den, eller på en anden ting i ${ux("itemLabels") ? "sækken" : "rygsækken"} for at sætte dem sammen.`);
     }
     renderInventory();
   }
@@ -199,16 +295,22 @@ const Game = (() => {
     api.take(a);
     api.take(b);
     api.give(r.result);
-    Sound.play("success");
+    success();
     openModal(`<div class="modal-icon">${game.items[a].icon} + ${game.items[b].icon} = ${game.items[r.result].icon}</div><p>${r.text}</p>`);
     api.say(`Du lavede: ${game.items[r.result].icon} <b>${game.items[r.result].name}</b>`);
   }
 
   // ---------- Popup ----------
   // locked = the player cannot close it themselves (used for short "freeze" events)
+  // opts: { cls: extra class on the box (e.g. "wide"), onClose: called once when closed }
   let modalLocked = false;
-  function openModal(html, onMount, locked = false) {
+  let modalOpts = {};
+  function openModal(html, onMount, locked = false, opts = {}) {
+    if (modalOpts.onClose) { const f = modalOpts.onClose; modalOpts = {}; f(); }
     modalLocked = locked;
+    modalOpts = opts;
+    const box = $("modalBox");
+    box.className = opts.cls || "";
     $("modalClose").classList.toggle("hidden", locked);
     $("modalContent").innerHTML = html;
     $("modal").classList.remove("hidden");
@@ -219,6 +321,9 @@ const Game = (() => {
     modalLocked = false;
     $("modalClose").classList.remove("hidden");
     $("modal").classList.add("hidden");
+    $("modalBox").className = "";
+    if (modalOpts.onClose) { const f = modalOpts.onClose; modalOpts = {}; f(); }
+    modalOpts = {};
   }
   function shakeModal() {
     const box = $("modalBox");
@@ -247,7 +352,7 @@ const Game = (() => {
         if (input.length === opts.length && k !== "✔" && k !== "⌫") setTimeout(check, 150);
       }));
       function check() {
-        if (input === String(opts.answer)) { Sound.play("success"); opts.onSolve(); }
+        if (input === String(opts.answer)) { success(); opts.onSolve(); }
         else { shakeModal(); input = ""; show(); }
       }
     });
@@ -266,7 +371,7 @@ const Game = (() => {
         Sound.play("click");
       }));
       root.querySelector("#tryPick").addEventListener("click", () => {
-        if (opts.rows.every((r, i) => pick[i] === r.answer)) { Sound.play("success"); opts.onSolve(); }
+        if (opts.rows.every((r, i) => pick[i] === r.answer)) { success(); opts.onSolve(); }
         else shakeModal();
       });
     });
@@ -285,7 +390,7 @@ const Game = (() => {
         Sound.play("click");
       }));
       root.querySelector("#tryCycle").addEventListener("click", () => {
-        if (idx.every((s, i) => opts.symbols[s] === opts.answer[i])) { Sound.play("success"); opts.onSolve(); }
+        if (idx.every((s, i) => opts.symbols[s] === opts.answer[i])) { success(); opts.onSolve(); }
         else shakeModal();
       });
     });
@@ -301,6 +406,7 @@ const Game = (() => {
         const b = opts.buttons.find((x) => x.v === btn.dataset.v);
         input.push(b.v);
         if (b.tone) Sound.note(b.tone); else Sound.play("click");
+        btn.classList.remove("hit"); void btn.offsetWidth; btn.classList.add("hit");
         dots.innerHTML = input.map((v) => opts.buttons.find((x) => x.v === v).html).join(" ");
         const i = input.length - 1;
         if (input[i] !== opts.answer[i]) {
@@ -308,7 +414,7 @@ const Game = (() => {
           input = [];
           setTimeout(() => { dots.innerHTML = ""; }, 400);
         } else if (input.length === opts.answer.length) {
-          setTimeout(() => { Sound.play("success"); opts.onSolve(); }, 250);
+          setTimeout(() => { success(); opts.onSolve(); }, 250);
         }
       }));
     });
@@ -336,10 +442,12 @@ const Game = (() => {
     closeModal(true);
     state.room = id;
     state.selected = null;
-    $("scene").className = "";
+    const scene = $("scene");
+    scene.className = "";
+    if (ux("fx")) { void scene.offsetWidth; scene.classList.add("room-enter"); }
     const r = room();
     const n = game.order.indexOf(id) + 1;
-    $("roomName").textContent = `${game.emoji} Rum ${n}/${game.order.length}: ${r.title}`;
+    renderRoomName();
     render();
     renderInventory();
     api.say(r.intro);
@@ -361,18 +469,24 @@ const Game = (() => {
     if (id !== "introScreen") $("introArt").innerHTML = "";
   }
 
+  function setTheme(t) {
+    document.body.className = document.body.className.replace(/\btheme-\S+/g, "").trim();
+    if (t) document.body.classList.add("theme-" + t);
+  }
+
   function showMenu() {
     clearInterval(timerId);
     clearTimers();
     closeModal(true);
     Sound.stopMusic();
     document.body.style.removeProperty("--accent");
+    setTheme(null);
     showScreen("menuScreen");
     $("gameGrid").innerHTML = GAME_ORDER.map((id, i) => {
       const g = games[id];
       const d = DIFFICULTY[g.difficulty];
-      return `<button class="game-card" data-game="${id}" style="--accent:${g.accent}">
-        <div class="card-art">${roomSvg(g.rooms[g.order[0]], thumbApi, false)}</div>
+      return `<button class="game-card ${g.isNew ? "is-new" : ""}" data-game="${id}" style="--accent:${g.accent}">
+        <div class="card-art">${roomSvg(g.rooms[g.order[0]], thumbApi, false)}${g.isNew ? `<span class="new-badge">NYT!</span>` : ""}</div>
         <div class="card-body">
           <div class="card-num">Spil ${i + 1}</div>
           <div class="card-title">${g.emoji} ${g.title}</div>
@@ -385,6 +499,7 @@ const Game = (() => {
   function showIntro(id) {
     game = games[id];
     document.body.style.setProperty("--accent", game.accent);
+    setTheme(game.theme);
     showScreen("introScreen");
     const d = DIFFICULTY[game.difficulty];
     $("introArt").innerHTML = roomSvg(game.rooms[game.order[0]], thumbApi, false);
@@ -396,11 +511,12 @@ const Game = (() => {
   function start() {
     Sound.init();
     Sound.startMusic(game.music);
-    state = { room: null, inventory: [], selected: null, flags: {}, seconds: 0, hintsUsed: 0, hintStep: {} };
+    state = { room: null, inventory: [], selected: null, flags: {}, just: {}, notes: [], seconds: 0, hintsUsed: 0, hintStep: {} };
     ["menuScreen", "introScreen", "endScreen"].forEach((s) => $(s).classList.add("hidden"));
     $("gameGrid").innerHTML = "";
     $("introArt").innerHTML = "";
     $("timer").textContent = "⏱️ 00:00";
+    updateNoteBtn(false);
     clearInterval(timerId);
     timerId = setInterval(() => { state.seconds++; $("timer").textContent = "⏱️ " + fmt(state.seconds); }, 1000);
     const startRoom = new URLSearchParams(location.search).get("room"); // testing: ?game=prison&room=corridor
@@ -413,15 +529,19 @@ const Game = (() => {
     closeModal(true);
     Sound.stopMusic();
     Sound.play("win");
-    const hintText = state.hintsUsed === 0 ? "helt uden hjælp! 🏆" : `og brugte ${state.hintsUsed} × 💡`;
+    const hintText = state.hintsUsed === 0 ? "helt uden ledetråde! 🏆" : `og brugte ${state.hintsUsed} × 💡`;
     $("endTitle").textContent = game.winTitle || "Du slap ud!";
+    $("endEmoji").textContent = game.winEmoji || "🎉🕵️🎉";
     $("endText").innerHTML = `Tid: <b>${fmt(state.seconds)}</b> ${hintText}<br><br>${html}`;
     showScreen("endScreen");
+    if (ux("fx")) [0, 250, 500, 800].forEach((t, i) => setTimeout(() => burst(innerWidth * (0.2 + 0.2 * i), innerHeight * 0.3, 18), t));
   }
 
   const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
   function init() {
+    // Remember where the player last clicked (used for sparkles and flying items)
+    document.addEventListener("pointerdown", (e) => { lastClient = { x: e.clientX, y: e.clientY }; }, true);
     $("scene").addEventListener("click", onSceneClick);
     $("scene").addEventListener("mousemove", onSceneMove);
     $("scene").addEventListener("mouseleave", () => $("tip").classList.remove("show"));
@@ -435,6 +555,7 @@ const Game = (() => {
     $("againBtn").addEventListener("click", start);
     $("menuBtn").addEventListener("click", showMenu);
     $("endMenuBtn").addEventListener("click", showMenu);
+    $("noteBtn").addEventListener("click", showNotebook);
     $("hintBtn").addEventListener("click", () => { Sound.play("click"); giveHint(); });
     const howTo = $("howToTpl").innerHTML;
     document.querySelectorAll(".how-slot").forEach((el) => { el.innerHTML = howTo; });
@@ -442,11 +563,12 @@ const Game = (() => {
       Sound.play("click");
       openModal(`<div class="modal-icon">❓</div><h2 class="help-title">Sådan spiller du</h2>
         <div class="help-how">${howTo}</div>
+        ${ux("notebook") ? `<p class="small-text">📓 I dette spil skriver du automatisk vigtige spor ned i <b>notesbogen</b>.</p>` : ""}
         <div class="clue-box help-tips"><b>Sidder du fast? Prøv det her:</b><br>
           🔍 Klik på <b>alt</b> i rummet – også på ting, du allerede har kigget på<br>
           🔢 Kig efter <b>tal, bogstaver, farver og symboler</b>. De er ofte svaret på en lås<br>
           🎒 Prøv at <b>bruge</b> dine ting på forskellige ting i rummet<br>
-          🧩 Prøv at <b>sætte to ting sammen</b> i rygsækken<br>
+          🧩 Prøv at <b>sætte to ting sammen</b><br>
           💡 Stadig fast? Tryk på <b>Ledetråd</b></div>`);
     });
     $("modalClose").addEventListener("click", closeModal);

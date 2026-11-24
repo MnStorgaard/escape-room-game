@@ -1,6 +1,6 @@
-# Flugt-eventyr – 5 escape games
+# Flugt-eventyr – escape games for kids
 
-Browser escape rooms for kids aged 6-9 (Danish). 5 games × 3 rooms, drawn SVG graphics, generated sound, no external files.
+Browser escape rooms for kids aged 6-9 (Danish). 6 games, drawn SVG graphics, generated sound, no external files.
 
 ## Play online
 https://mnstorgaard.github.io/escape-room-game/
@@ -11,22 +11,24 @@ https://mnstorgaard.github.io/escape-room-game/
 - Testing shortcuts: `?game=space` opens a game's intro, `?game=space&room=airlock` starts in that room
 
 ## Games
-| # | Game | Difficulty | Special mechanics |
-|---|------|------------|-------------------|
-| 1 | 🦖 Dinosaur-museet | Easy | counting, feed the herbivore, flashlight in cave, size ordering |
-| 2 | 🔒 Fængslet | Normal | mirror writing, sneak past guard (timing), radio distraction |
-| 3 | 🏫 Skolen | Normal | letter-number cipher + word lock, hide from janitor (reaction), piano tones, logic, alarm wires |
-| 4 | 🚀 Rumstationen | Normal+ | gravity switch, wire mapping, robot needs 2 parts, lamp code (4-2-1), airlock procedure, radar coordinates |
-| 5 | 👻 Spøgelseshuset | Hard | darkness + flashlight, eyes that follow you, ghost scares, clues across rooms, invisible ink, music box memory |
+| # | Game | Difficulty | Rooms | Special mechanics |
+|---|------|------------|-------|-------------------|
+| 1 | 🦖 Dinosaur-museet | Easy | 3 | counting, feed the herbivore, flashlight in cave, size ordering |
+| 2 | 🔒 Fængslet | Normal | 3 | mirror writing, sneak past guard (timing), radio distraction |
+| 3 | 🏫 Skolen | Normal | 3 | letter-number cipher + word lock, hide from janitor (reaction), piano tones, logic, alarm wires |
+| 4 | 🚀 Rumstationen | Normal+ | 3 | gravity switch, wire mapping, robot needs 2 parts, lamp code (4-2-1), airlock procedure, radar coordinates |
+| 5 | 🎄 Nissernes værksted | Normal+ | 4 | notebook, sparkles/flying items, interactive balance scale, logic, bell melody, **delivery minigame** (drop presents in chimneys), story twist with Pjok |
+| 6 | 👻 Spøgelseshuset | Hard | 3 | darkness + flashlight, eyes that follow you, ghost scares, clues across rooms, invisible ink, music box memory |
 
 ## Files
-- `engine.js` – menu, intro, state, inventory (select / combine / use), puzzle widgets (code, pick, cycle, sequence, word), hints, timer, darkness, hover labels
+- `engine.js` – menu, intro, state, inventory (select / combine / use), puzzle widgets (code, pick, cycle, sequence, word), hints, timer, darkness, hover labels, optional UX extras (notebook, fx, item labels, room progress)
 - `art.js` – shared SVG patterns, characters, particles
-- `games/<game>/*.js` – one folder per game: `Game.define(...)` + rooms
+- `games/<game>/*.js` – one folder per game: `Game.define(...)` + rooms (`games/xmas/delivery.js` is the canvas minigame)
 - `sound.js` – generated sound effects and per-game music
-- `index.html`, `style.css` – page layout and look
+- `index.html`, `style.css`, `theme-xmas.css` – page layout, look and the Christmas theme
 
 ## Add a new game
 1. Create `games/<id>/<id>.js` with `Game.define("<id>", { title, emoji, difficulty, minutes, accent, tagline, story, music })`
+   - Optional: `ux: { notebook, fx, itemLabels, progress }`, `theme`, `winEmoji`, `isNew`
 2. Add rooms with `G.room({ id, title, intro, background, objects, goal, hints })`
 3. Add a `<script>` tag in `index.html` (the order there = order on the menu)
