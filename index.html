@@ -16,7 +16,8 @@
     </div>
     <div id="roomName"></div>
     <div id="buttons">
-      <button id="hintBtn" title="Hjælp">💡 Hjælp</button>
+      <button id="hintBtn" title="Få et tip til næste skridt">💡 Ledetråd</button>
+      <button id="helpBtn" title="Sådan spiller du">❓ Hjælp</button>
       <button id="soundBtn" title="Lyd til/fra">🔊</button>
     </div>
   </header>
@@ -30,6 +31,17 @@
     <div id="invItems"></div>
   </footer>
 </div>
+
+<!-- How to play: one copy, reused on the menu, the intro and in the help popup -->
+<template id="howToTpl">
+  <div class="how">
+    <div>👆 <b>Klik</b> på ting i rummet for at undersøge dem</div>
+    <div>🎒 Ting du finder, havner i <b>rygsækken</b>. Klik på en ting i rygsækken og derefter på noget i rummet for at <b>bruge</b> den</div>
+    <div>🧩 Klik på to ting i rygsækken for at <b>sætte dem sammen</b></div>
+    <div>🔢 Gåder åbner låse. Svaret står tit et andet sted i rummet</div>
+    <div>💡 <b>Ledetråd</b> giver et tip til næste skridt · ❓ <b>Hjælp</b> viser denne vejledning</div>
+  </div>
+</template>
 
 <div id="banner"></div>
 <div id="tip"></div>
@@ -46,12 +58,14 @@
   <div class="menu-box">
     <h1 class="logo">🗝️ Flugt-eventyr</h1>
     <p class="subtitle">Vælg et spil. Find spor, løs gåder og slip ud!</p>
-    <div class="legend">
-      <span class="diff d1">●○○○ Nem</span>
-      <span class="diff d2">●●○○ Normal</span>
-      <span class="diff d3">●●●○ Normal+</span>
-      <span class="diff d4">●●●● Svær</span>
-    </div>
+    <details class="howto">
+      <summary>📖 Sådan spiller du</summary>
+      <div class="howto-body">
+        <p><b>Tanken bag spillet:</b> Du er låst inde og skal finde vej ud. Hvert spil har 3 rum. I hvert rum gemmer der sig spor, ting og gåder, som tilsammen åbner døren til næste rum.</p>
+        <div class="how-slot"></div>
+        <p><b>Sværhed:</b> Spillene går fra 🟢 Nem til 🔴 Svær. Er du ny, så start med Dinosaur-museet.</p>
+      </div>
+    </details>
     <div id="gameGrid"></div>
   </div>
 </div>
@@ -64,12 +78,7 @@
       <h1 id="introTitle"></h1>
       <div id="introDiff"></div>
       <div id="introStory"></div>
-      <div class="how">
-        <div>👆 Klik på ting i rummet</div>
-        <div>🎒 Klik på en ting i rygsækken og derefter på noget i rummet for at bruge den</div>
-        <div>🧩 Klik på to ting i rygsækken for at sætte dem sammen</div>
-        <div>💡 Sidder du fast? Tryk på Hjælp</div>
-      </div>
+      <div class="how-slot"></div>
       <div class="row">
         <button id="introBack">⬅️ Tilbage</button>
         <button id="startBtn" class="primary">▶️ Start</button>

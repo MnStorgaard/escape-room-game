@@ -436,6 +436,19 @@ const Game = (() => {
     $("menuBtn").addEventListener("click", showMenu);
     $("endMenuBtn").addEventListener("click", showMenu);
     $("hintBtn").addEventListener("click", () => { Sound.play("click"); giveHint(); });
+    const howTo = $("howToTpl").innerHTML;
+    document.querySelectorAll(".how-slot").forEach((el) => { el.innerHTML = howTo; });
+    $("helpBtn").addEventListener("click", () => {
+      Sound.play("click");
+      openModal(`<div class="modal-icon">❓</div><h2 class="help-title">Sådan spiller du</h2>
+        <div class="help-how">${howTo}</div>
+        <div class="clue-box help-tips"><b>Sidder du fast? Prøv det her:</b><br>
+          🔍 Klik på <b>alt</b> i rummet – også på ting, du allerede har kigget på<br>
+          🔢 Kig efter <b>tal, bogstaver, farver og symboler</b>. De er ofte svaret på en lås<br>
+          🎒 Prøv at <b>bruge</b> dine ting på forskellige ting i rummet<br>
+          🧩 Prøv at <b>sætte to ting sammen</b> i rygsækken<br>
+          💡 Stadig fast? Tryk på <b>Ledetråd</b></div>`);
+    });
     $("modalClose").addEventListener("click", closeModal);
     $("modal").addEventListener("click", (e) => { if (e.target.id === "modal") closeModal(); });
     $("soundBtn").addEventListener("click", (e) => { e.currentTarget.textContent = Sound.toggle() ? "🔇" : "🔊"; });

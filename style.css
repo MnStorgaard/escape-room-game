@@ -258,7 +258,6 @@ button.primary:hover { background: var(--accent); filter: brightness(1.12); }
 .menu-box { width: min(1180px, 100%); }
 .logo { font-size: 3.2rem !important; margin: 6px 0 0 !important; color: #ffd86b !important; text-shadow: 0 4px 24px rgba(255, 200, 80, .35); }
 .subtitle { font-size: 1.25rem; opacity: .85; margin: 6px 0 12px; }
-.legend { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
 #gameGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
 .game-card {
   display: flex; flex-direction: column; padding: 0; overflow: hidden; text-align: left;
@@ -279,6 +278,20 @@ button.primary:hover { background: var(--accent); filter: brightness(1.12); }
 .d2 { background: #f9a825; color: #2b1d00; }
 .d3 { background: #ef6c00; color: #fff3e0; }
 .d4 { background: #c62828; color: #ffebee; }
+
+/* How-to fold-out on the menu */
+.howto { max-width: 760px; margin: 0 auto 20px; background: rgba(255,255,255,.06); border: 2px solid #3a3550; border-radius: 16px; text-align: left; }
+.howto summary { cursor: pointer; padding: 12px 18px; font-size: 1.2rem; font-weight: bold; color: #ffd86b; list-style: none; }
+.howto summary::-webkit-details-marker { display: none; }
+.howto summary::after { content: " ▾"; }
+.howto[open] summary::after { content: " ▴"; }
+.howto-body { padding: 0 18px 12px; font-size: 1.05rem; line-height: 1.5; }
+.howto-body .how { margin: 10px 0; }
+
+/* Help popup */
+.help-title { margin: 0 0 8px; font-size: 1.6rem; }
+.help-how .how { background: #fff; color: #1d1b26; margin: 8px 0 12px; }
+.help-tips { text-align: left; font-size: 1.05rem; line-height: 1.7; display: block; }
 
 /* Intro */
 .intro-box { display: grid; grid-template-columns: 1.1fr 1fr; gap: 24px; width: min(1150px, 100%); align-items: center; text-align: left; }
